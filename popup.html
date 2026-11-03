@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>PMTA Error Watcher</title>
+<style>
+  :root {
+    --red: #7a1220;
+    --red-light: #b00020;
+    --ok: #1a7f37;
+    --bg: #f6f4f1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    width: 680px;
+    max-height: 580px;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: #222;
+  }
+  header {
+    background: var(--red);
+    color: white;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header h1 {
+    font-size: 15px;
+    margin: 0;
+    font-weight: 600;
+  }
+  #headerActions { display: flex; align-items: center; gap: 6px; }
+  #scanBtn, #clearBtn, #historyBtn, #liveBtn, #clearHistoryBtn {
+    background: var(--red-light);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  #scanBtn:hover, #clearBtn:hover, #historyBtn:hover, #liveBtn:hover, #clearHistoryBtn:hover { opacity: 0.9; }
+  #scanBtn:disabled, #clearBtn:disabled { opacity: 0.6; cursor: default; }
+  #clearBtn, #clearHistoryBtn { background: #555; }
+  #historyBtn, #liveBtn { background: #6b3a42; }
+  #historyBtn.active, #liveBtn.active { background: #fff; color: var(--red); font-weight: 600; }
+  #settingsBtn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 6px;
+    line-height: 1;
+    opacity: 0.85;
+  }
+  #settingsBtn:hover { opacity: 1; }
+  #status {
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #666;
+    background: #efece7;
+    border-bottom: 1px solid #ddd;
+  }
+  #filterBar {
+    padding: 8px 14px;
+    background: #efece7;
+    border-bottom: 1px solid #ddd;
+    display: none;
+  }
+  #filterBar.visible { display: block; }
+  #filterInput {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  #filterInput:focus {
+    outline: none;
+    border-color: var(--red);
+  }
+  #summary {
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #555;
+    background: #faf9f7;
+    border-bottom: 1px solid #eee;
+    display: none;
+  }
+  #summary.visible { display: block; }
+  #results {
+    padding: 0;
+    overflow-y: auto;
+    max-height: 420px;
+  }
+  table.errors-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    background: white;
+  }
+  table.errors-table th,
+  table.errors-table td {
+    text-align: left;
+    padding: 5px 7px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+  }
+  table.errors-table th {
+    color: #555;
+    font-weight: 600;
+    background: #faf9f7;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  table.errors-table td.error-cell {
+    color: var(--red-light);
+    word-break: break-word;
+    max-width: 200px;
+  }
+  table.errors-table td.server-cell {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  table.errors-table td.ip-cell {
+    font-family: ui-monospace, monospace;
+    white-space: nowrap;
+    font-weight: 600;
+    color: #333;
+  }
+  table.errors-table tr.fetch-error td {
+    color: var(--red-light);
+    font-style: italic;
+  }
+  table.errors-table tr.no-errors td {
+    color: var(--ok);
+  }
+  #empty {
+    padding: 20px 14px;
+    font-size: 13px;
+    color: #666;
+  }
+  .hint {
+    font-size: 11px;
+    color: #888;
+    padding: 4px 14px 8px;
+    background: #faf9f7;
+    border-bottom: 1px solid #eee;
+    display: none;
+  }
+  .hint.visible { display: block; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>PMTA Error Watcher</h1>
+    <div id="headerActions">
+      <button id="liveBtn" class="active" title="Latest scan">Live</button>
+      <button id="historyBtn" title="Stored error history">History</button>
+      <button id="scanBtn">Scan Now</button>
+      <button id="clearBtn" title="Clear live results">Clear</button>
+      <button id="clearHistoryBtn" title="Clear stored history" style="display:none">Clear history</button>
+      <button id="settingsBtn" title="Settings">⚙</button>
+    </div>
+  </header>
+  <div id="status">No scan yet</div>
+  <div id="filterBar">
+    <input type="text" id="filterInput" placeholder="Filter by server, error IP, domain, VMTA, or error text…" autocomplete="off" />
+  </div>
+  <div id="viewHint" class="hint"></div>
+  <div id="summary"></div>
+  <div id="results"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
